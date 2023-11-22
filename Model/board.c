@@ -12,7 +12,7 @@ Board createBoard(void)
     // Initialiser le tableau avec des valeurs par défaut
     for (int i = 0; i < 2; i++)
     {
-        for (int j = 0; j < 5; j++)
+        for (int j = 0; j < 6; j++)
         {
             newBoard.board[i][j] = 4;
         }
@@ -23,16 +23,56 @@ Board createBoard(void)
 
 void showBoard(Board board)
 {
-    // printf("%ld", sizeof(board->board));
-    // printf("%ld", sizeof(board->board[0]));
+    // printf("%ld", sizeof(board.board));
+    // printf("%ld", sizeof(board.board[0]));
 
     // Afficher le contenu du tableau
     for (int i = 0; i < 2; i++)
     {
-        for (int j = 0; j < 5; j++)
+        for (int j = 0; j < 6; j++)
         {
             printf("%d ", board.board[i][j]);
         }
         printf("\n");
     }
+}
+
+Board makeMove(Board board, int actualCase, Player player)
+{
+    int actualLine = player.playerNumber;
+    int numberOfStones = board.board[actualLine][actualCase];
+
+    board.board[actualLine][actualCase] = 0;
+
+    for (int i = 0; i < numberOfStones; i++)
+    {
+        if (!actualLine)
+        {
+            if (actualCase - 1 == -1)
+            {
+                actualLine = 1;
+                actualCase = 0;
+                board.board[actualLine][actualCase]++;
+
+                continue;
+            }
+
+            board.board[actualLine][--actualCase]++;
+
+            continue;
+        }
+
+        if (actualCase + 1 == 6)
+        {
+            actualLine = 0;
+            actualCase = 5;
+            board.board[actualLine][actualCase]++;
+
+            continue;
+        }
+
+        board.board[actualLine][++actualCase]++;
+    }
+
+    return board;
 }
