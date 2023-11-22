@@ -1,0 +1,19 @@
+CC=gcc
+CFLAGS= -Wall -Wextra
+LDFLAGS=
+
+SOURCES=$(wildcard *.c )
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=prog
+
+all: $(EXECUTABLE)
+	./$(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJECTS)
+
+$(OBJECTS): $(SOURCES)
+	$(CC) $(CFLAGS) -c $(SOURCES)
+
+clean:
+	rm $(EXECUTABLE) $(OBJECTS)
