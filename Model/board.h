@@ -1,20 +1,16 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#ifndef PLAYER_H
-#define PLAYER_H
-
 #include "player.h"
-
-#endif // PLAYER_H
 
 typedef struct
 {
-    int board[2][5];
+    int board[2][6];
 } Board;
 
 Board createBoard(void);
 void showBoard(Board);
-// void makeMove(Board, int, Player);
+Board makeMove(Board, int, Player);
+void freeBoard(Board);
 
 #endif // BOARD_H

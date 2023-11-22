@@ -9,12 +9,13 @@
 int main()
 {
     Board board = createBoard();
+    Player player = createPlayer(0);
     int exit = 0;
     int selection;
 
     while (!exit)
     {
-        printf("Select an option\n1. Show board\n2. Exit\n");
+        printf("Select an option\n1. Show board\n2. Make move\n3. Exit\n");
 
         scanf("%d", &selection);
 
@@ -25,6 +26,13 @@ int main()
             break;
 
         case 2:
+            printf("Select a number betwenn 0 and 5\n");
+            int caseSelected;
+            scanf("%d", &caseSelected);
+            board = makeMove(board, caseSelected, player);
+            break;
+
+        case 3:
             exit = 1;
             break;
 

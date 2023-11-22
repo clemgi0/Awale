@@ -7,4 +7,6 @@ typedef struct
     int playerNumber;
 } Player;
 
+Player createPlayer(int);
+
 #endif // PLAYER_H

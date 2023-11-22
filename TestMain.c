@@ -8,9 +8,11 @@
 
 int main()
 {
-    Board board = createBoard();
+    Board *board = createBoard();
 
     showBoard(board);
+
+    freeBoard(board);
 
     return 0;
 }
