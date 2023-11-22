@@ -11,6 +11,5 @@ typedef struct
 Board createBoard(void);
 void showBoard(Board);
 Board makeMove(Board, int, Player);
-void freeBoard(Board);
 
 #endif // BOARD_H
