@@ -37,9 +37,8 @@ void showBoard(Board board)
     }
 }
 
-Board makeMove(Board board, int actualCase, Player player)
+Board makeMove(Board board, int actualCase, int actualLine)
 {
-    int actualLine = player.playerNumber;
     int numberOfStones = board.board[actualLine][actualCase];
 
     board.board[actualLine][actualCase] = 0;
@@ -75,4 +74,9 @@ Board makeMove(Board board, int actualCase, Player player)
     }
 
     return board;
+}
+
+int isLegalMove(Board board, int actualCase, int line)
+{
+    return (board.board[line][actualCase] == 0 || actualCase < 0 || actualCase > 6 || line < 0 || line > 1) ? 0 : 1;
 }

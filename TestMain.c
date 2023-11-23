@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -8,9 +9,8 @@
 
 int main()
 {
-    Board board = createBoard();
-
-    showBoard(board);
+    size_t maxSize = SIZE_MAX;
+    printf("La taille maximale d'un tableau est : %zu\n", maxSize);
 
     return 0;
 }
