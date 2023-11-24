@@ -36,4 +36,4 @@ $(BIN)/%.o: Model/%.c
 
 # La cible pour nettoyer les fichiers générés
 clean:
-	rm -f $(BIN)/$(EXECUTABLE) $(OBJECTS) bin/Main.o bin/TestMain.o
+	rm -f $(BIN)/$(EXECUTABLE) $(OBJECTS) bin/Main.o bin/TestMain.o bin/test
