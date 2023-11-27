@@ -237,3 +237,33 @@ int main(int argc, char **argv)
 
    return EXIT_SUCCESS;
 }
+
+import socket
+import threading
+
+# Fonction pour gérer la connexion d'un client
+def handle_client(conn, addr):
+    print(f"Connexion acceptée de {addr}")
+
+    # Logique de gestion du jeu ici
+
+    conn.close()
+
+# Paramètres du serveur
+HOST = '127.0.0.1'
+PORT = 12345
+
+# Création du socket
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((HOST, PORT))
+server_socket.listen()
+
+print(f"Serveur en attente sur {HOST}:{PORT}")
+
+while True:
+    # Attente d'une connexion
+    conn, addr = server_socket.accept()
+
+    # Démarrage d'un thread pour gérer le client
+    client_thread = threading.Thread(target=handle_client, args=(conn, addr))
+    client_thread.start()
