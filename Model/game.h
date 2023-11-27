@@ -1,9 +1,9 @@
 #ifndef GAME_H
 #define GAME_H
 
-#define MAX_MOVE 1000
-
 #include "player.h"
+
+#define MAX_MOVE 1000
 
 typedef struct
 {

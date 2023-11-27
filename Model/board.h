@@ -1,16 +1,24 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "player.h"
-
 typedef struct
 {
     int board[2][6];
 } Board;
 
+typedef struct
+{
+    int line;
+    int col;
+} Case;
+
 Board createBoard(void);
 void showBoard(Board);
-Board makeMove(Board, int, int);
+Case nextCase(Case);
+Case getArrivalCase(int, Case);
+Board makeMove(Board, Case);
 int isLegalMove(Board, int, int);
+int areCasesTaken(Board, int, Case);
+Board emptyCasesTaken(Board, Case, int);
 
 #endif // BOARD_H

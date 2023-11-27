@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS= -Wall -Wextra
-LDFLAGS=
+CFLAGS= -Wall -Wextra -g
+LDFLAGS= -lncurses
 BIN=bin
 EXECUTABLE=prog
 TEST=test

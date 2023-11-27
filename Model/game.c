@@ -5,19 +5,23 @@
 
 #include "game.h"
 
-Game createGame(Player player1, Player player2)
+Game createGame(Player first, Player second)
 {
-    Game game;
-    game.firstPlayer = player1;
-    game.secondPlayer = player2;
-    game.numberOfMoves = 0;
-
-    return game;
+    Game newGame;
+    newGame.firstPlayer = first;
+    newGame.secondPlayer = second;
+    newGame.numberOfMoves = 0;
+    // Initialiser d'autres propriétés au besoin
+    return newGame;
 }
 
 Game addMove(Game game, int move)
 {
-    game.moves[++game.numberOfMoves] = move;
-
+    if (game.numberOfMoves < MAX_MOVE)
+    {
+        game.moves[game.numberOfMoves] = move;
+        game.numberOfMoves++;
+    }
+    // Gérer le cas où le tableau de mouvements est plein
     return game;
 }
