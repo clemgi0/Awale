@@ -11,19 +11,3 @@ typedef struct
 
 #endif /* guard */
 
-
-import socket
-
-# Paramètres du client
-HOST = '127.0.0.1'
-PORT = 12345
-
-# Création du socket
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((HOST, PORT))
-
-# Logique de jeu ici
-
-client_socket.close()
-
-
