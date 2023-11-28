@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
+#include <ctype.h>
 
 #include "Model/board.h"
 #include "Model/player.h"
@@ -28,25 +29,30 @@ int main()
         showBoard(board);
 
         printw("Select a number between 1 and 6\n");
-        int colSelected;
-        scanw("%d", &colSelected);
 
-        colSelected--;
+        char colSelectedString[100];
+        scanw("%s", colSelectedString);
 
-        while (!isLegalMove(board, colSelected, actualPlayerLine))
+        Case actualCase = {actualPlayerLine, -1};
+
+        while (!isdigit(colSelectedString[0]) || !isLegalMove(board, actualCase))
         {
-            printw("\nPlease select a legal move.\n\n");
-            printw("Select a number between 1 and 6\n");
-            scanw("%d", &colSelected);
+            printw("\nInvalid entry.");
+            printw("\nSelect a number between 1 and 6:\n");
 
-            colSelected--;
+            scanw("%s", colSelectedString);
+
+            if (isdigit(colSelectedString[0]))
+            {
+                int colSelected = atoi(colSelectedString);
+                colSelected--;
+                actualCase.col = colSelected;
+            }
         }
 
-        Case actualCase = {actualPlayerLine, colSelected};
-
-        Case arrivalCase = getArrivalCase(board.board[actualPlayerLine][colSelected], actualCase);
+        Case arrivalCase = getArrivalCase(board.board[actualCase.line][actualCase.col], actualCase);
         board = makeMove(board, actualCase);
-        game = addMove(game, colSelected);
+        game = addMove(game, actualCase.col);
         int numberOfCasesTaken = areCasesTaken(board, actualPlayerLine, arrivalCase);
 
         if (numberOfCasesTaken)

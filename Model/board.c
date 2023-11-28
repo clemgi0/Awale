@@ -95,15 +95,18 @@ Board makeMove(Board board, Case actualCase)
     {
         actualCase = nextCase(actualCase);
 
+        if (i != 0 && i % 12 == 0)
+            actualCase = nextCase(actualCase);
+
         board.board[actualCase.line][actualCase.col]++;
     }
 
     return board;
 }
 
-int isLegalMove(Board board, int actualCase, int line)
+int isLegalMove(Board board, Case actualCase)
 {
-    return (board.board[line][actualCase] == 0 || actualCase < 0 || actualCase > 6 || line < 0 || line > 1) ? 0 : 1;
+    return (board.board[actualCase.line][actualCase.col] == 0 || actualCase.col < 0 || actualCase.col > 6 || actualCase.line < 0 || actualCase.line > 1) ? 0 : 1;
 }
 
 int areCasesTaken(Board board, int playerNumber, Case arrivalCase)
