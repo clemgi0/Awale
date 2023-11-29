@@ -17,6 +17,7 @@ void showBoard(Board);
 Case nextCase(Case);
 Case getArrivalCase(int, Case);
 Board makeMove(Board, Case);
+int createFamine(Board, Case);
 int isLegalMove(Board, Case);
 int areCasesTaken(Board, int, Case);
 Board emptyCasesTaken(Board, Case, int);
