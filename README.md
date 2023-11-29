@@ -1,16 +1,11 @@
 # Awale
 Programmation d’un serveur de Jeu Awalé
 
-Etape à suivre pour jouer :
+# How to run
+1. run sudo apt-get install libncurses5-dev libncursesw5-dev //to install the ncurses library
 
-1. Pour exécuter le programmese mettre dans le repertoire où se trouve le Makefile puis utiliser la ligne de commande suivante:
+2. run make clean //to destroy old bin files
 
-make ./bin/prog #création de l'exécutable "prog" dans le fichier bin
+3. run make //to create the executable
 
-2. puis lancer l'exécutable "prog" avec la ligne de commande:
-
-./bin/prog
-
-3. Une fois la partie finie, nettoyer le fichier bin avec la ligne de commande:
-
-make clean 
+4. run ./bin/prog //to run the executable named prog

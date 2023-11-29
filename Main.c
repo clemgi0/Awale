@@ -43,6 +43,13 @@ int main()
 
         Case actualCase = {actualPlayerLine, -1};
 
+        if (isdigit(colSelectedString[0]))
+        {
+            int colSelected = atoi(colSelectedString);
+            colSelected--;
+            actualCase.col = colSelected;
+        }
+
         while (!isdigit(colSelectedString[0]) || !isLegalMove(board, actualCase))
         {
             printw("\nInvalid entry.");
