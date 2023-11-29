@@ -68,7 +68,14 @@ static void app(const char *address, const char *name)
                buffer[BUF_SIZE - 1] = 0;
             }
          }
-         write_server(sock, buffer);
+         
+         if (strncmp(buffer, "/defy", 5) == 0) {
+            // Send a challenge request
+            write_server(sock, buffer);
+         } else {
+            // Send regular message
+            write_server(sock, buffer);
+         }
       }
       else if(FD_ISSET(sock, &rdfs))
       {
