@@ -2,14 +2,15 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <ncurses.h>
 
 #include "board.h"
+#include "player.h"
 
 Board createBoard(void)
 {
     Board newBoard;
 
-    // Initialiser le tableau avec des valeurs par défaut
     for (int i = 0; i < 2; i++)
     {
         for (int j = 0; j < 6; j++)
@@ -23,55 +24,116 @@ Board createBoard(void)
 
 void showBoard(Board board)
 {
-    // printf("%ld", sizeof(board.board));
-    // printf("%ld", sizeof(board.board[0]));
+    printw("-------------------------\n");
 
-    // Afficher le contenu du tableau
     for (int i = 0; i < 2; i++)
     {
+        printw("| ");
+
         for (int j = 0; j < 6; j++)
         {
-            printf("%d ", board.board[i][j]);
+            printw("%d | ", board.board[i][j]);
         }
-        printf("\n");
+
+        printw("\n");
+        if (i < 1)
+            printw("|---|---|---|---|---|---|\n");
     }
+
+    printw("-------------------------\n");
+
+    refresh(); // Rafraîchit l'écran
 }
 
-Board makeMove(Board board, int actualCase, Player player)
+Case nextCase(Case nextCase)
 {
-    int actualLine = player.playerNumber;
-    int numberOfStones = board.board[actualLine][actualCase];
+    if (!nextCase.line)
+    {
+        if (nextCase.col - 1 == -1)
+        {
+            nextCase.line = 1;
+            nextCase.col = 0;
 
-    board.board[actualLine][actualCase] = 0;
+            return nextCase;
+        }
+
+        nextCase.col--;
+
+        return nextCase;
+    }
+
+    if (nextCase.col + 1 == 6)
+    {
+        nextCase.line = 0;
+        nextCase.col = 5;
+
+        return nextCase;
+    }
+
+    nextCase.col++;
+
+    return nextCase;
+}
+
+Case getArrivalCase(int numberOfStones, Case actualCase)
+{
+    for (int i = 0; i < numberOfStones; i++)
+    {
+        actualCase = nextCase(actualCase);
+    }
+
+    return actualCase;
+}
+
+Board makeMove(Board board, Case actualCase)
+{
+    int numberOfStones = board.board[actualCase.line][actualCase.col];
+
+    board.board[actualCase.line][actualCase.col] = 0;
 
     for (int i = 0; i < numberOfStones; i++)
     {
-        if (!actualLine)
-        {
-            if (actualCase - 1 == -1)
-            {
-                actualLine = 1;
-                actualCase = 0;
-                board.board[actualLine][actualCase]++;
+        actualCase = nextCase(actualCase);
 
-                continue;
-            }
+        if (i != 0 && i % 12 == 0)
+            actualCase = nextCase(actualCase);
 
-            board.board[actualLine][--actualCase]++;
+        board.board[actualCase.line][actualCase.col]++;
+    }
 
-            continue;
-        }
+    return board;
+}
 
-        if (actualCase + 1 == 6)
-        {
-            actualLine = 0;
-            actualCase = 5;
-            board.board[actualLine][actualCase]++;
+int isLegalMove(Board board, Case actualCase)
+{
+    return (board.board[actualCase.line][actualCase.col] == 0 || actualCase.col < 0 || actualCase.col > 6 || actualCase.line < 0 || actualCase.line > 1) ? 0 : 1;
+}
 
-            continue;
-        }
+int areCasesTaken(Board board, int playerNumber, Case arrivalCase)
+{
+    if (arrivalCase.line == playerNumber)
+    {
+        return 0;
+    }
 
-        board.board[actualLine][++actualCase]++;
+    int numberOfCasesTaken = 0;
+
+    while ((arrivalCase.col > -1 && arrivalCase.col < 6) && (board.board[arrivalCase.line][arrivalCase.col] == 2 || board.board[arrivalCase.line][arrivalCase.col] == 3))
+    {
+        numberOfCasesTaken++;
+        arrivalCase.col = arrivalCase.col + 1 - 2 * arrivalCase.line;
+    }
+
+    return numberOfCasesTaken;
+}
+
+Board emptyCasesTaken(Board board, Case arrivalCase, int numberOfCasesTaken)
+{
+    while (numberOfCasesTaken > 0)
+    {
+        board.board[arrivalCase.line][arrivalCase.col] = 0;
+        numberOfCasesTaken--;
+        arrivalCase.col = arrivalCase.col + 1 - 2 * arrivalCase.line;
     }
 
     return board;
