@@ -10,6 +10,13 @@ int main()
 {
     Board board = createBoard();
     Player player = createPlayer(0);
+
+    char pseudo[MAX_PSEUDO_LENGTH];
+
+    printf("Enter your pseudo: ");
+    scanf("%s", pseudo);
+    setPseudo(&player, pseudo);
+
     int exit = 0;
     int selection;
 
@@ -26,7 +33,7 @@ int main()
             break;
 
         case 2:
-            printf("Select a number betwenn 0 and 5\n");
+            printf("Select a number between 0 and 5\n");
             int caseSelected;
             scanf("%d", &caseSelected);
             board = makeMove(board, caseSelected, player);
