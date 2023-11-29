@@ -1,49 +1,91 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <string.h>
+#include <ncurses.h>
+#include <ctype.h>
 
 #include "Model/board.h"
 #include "Model/player.h"
+#include "Model/game.h"
 
 int main()
 {
+    initscr();   // Initialise ncurses
+    curs_set(0); // Masque le curseur
+
     Board board = createBoard();
-    Player player = createPlayer(0);
+    Player player1 = createPlayer(0);
+    Player player2 = createPlayer(1);
+    Game game = createGame(player1, player2);
+
+    Player actualPlayer = player1;
+    int actualPlayerLine = 0;
     int exit = 0;
-    int selection;
 
     while (!exit)
     {
-        printf("Select an option\n1. Show board\n2. Make move\n3. Exit\n");
+        clear();
 
-        scanf("%d", &selection);
+        showPlayer(actualPlayer);
+        showBoard(board);
 
-        switch (selection)
+        printw("Select a number between 1 and 6\n");
+
+        char colSelectedString[100];
+        scanw("%s", colSelectedString);
+
+        Case actualCase = {actualPlayerLine, -1};
+
+        while (!isdigit(colSelectedString[0]) || !isLegalMove(board, actualCase))
         {
-        case 1:
-            showBoard(board);
-            break;
+            printw("\nInvalid entry.");
+            printw("\nSelect a number between 1 and 6:\n");
 
-        case 2:
-            printf("Select a number betwenn 0 and 5\n");
-            int caseSelected;
-            scanf("%d", &caseSelected);
-            board = makeMove(board, caseSelected, player);
-            break;
+            scanw("%s", colSelectedString);
 
-        case 3:
-            exit = 1;
-            break;
-
-        default:
-            break;
+            if (isdigit(colSelectedString[0]))
+            {
+                int colSelected = atoi(colSelectedString);
+                colSelected--;
+                actualCase.col = colSelected;
+            }
         }
 
-        printf("\n");
+        Case arrivalCase = getArrivalCase(board.board[actualCase.line][actualCase.col], actualCase);
+        board = makeMove(board, actualCase);
+        game = addMove(game, actualCase.col);
+        int numberOfCasesTaken = areCasesTaken(board, actualPlayerLine, arrivalCase);
+
+        if (numberOfCasesTaken)
+        {
+            actualPlayer = addPoint(board, actualPlayer, arrivalCase, numberOfCasesTaken);
+            board = emptyCasesTaken(board, arrivalCase, numberOfCasesTaken);
+
+            if (checkWinner(actualPlayer))
+            {
+                exit = 1;
+            }
+        }
+
+        actualPlayerLine++;
+        actualPlayerLine = actualPlayerLine % 2;
+
+        if (!actualPlayerLine)
+        {
+            player2 = actualPlayer;
+            actualPlayer = player1;
+        }
+        else
+        {
+            player1 = actualPlayer;
+            actualPlayer = player2;
+        }
+
+        printw("\n");
     }
 
-    printf("End of the game.\n");
+    printw("End of the game.\n");
+
+    endwin();
 
     return 0;
 }
