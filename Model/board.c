@@ -9,21 +9,15 @@
 
 Board createBoard(void)
 {
-    // Board newBoard;
+    Board newBoard;
 
-    // for (int i = 0; i < 2; i++)
-    // {
-    //     for (int j = 0; j < 6; j++)
-    //     {
-    //         newBoard.board[i][j] = 4;
-    //     }
-    // }
-
-    Board newBoard = {
+    for (int i = 0; i < 2; i++)
+    {
+        for (int j = 0; j < 6; j++)
         {
-            {6, 6, 6, 6, 6, 6}, // First row
-            {2, 2, 2, 2, 2, 2}  // Second row
-        }};
+            newBoard.board[i][j] = 4;
+        }
+    }
 
     return newBoard;
 }
