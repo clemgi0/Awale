@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #include "Model/board.h"
 #include "Model/player.h"
@@ -73,6 +74,11 @@ int main()
             }
         }
 
+        if (checkDraw(&game, numberOfCasesTaken))
+        {
+            exit = 1;
+        }
+
         actualPlayerLine++;
         actualPlayerLine = actualPlayerLine % 2;
 
@@ -91,6 +97,9 @@ int main()
     }
 
     printw("End of the game.\n");
+    refresh();
+
+    sleep(3);
 
     endwin();
 
