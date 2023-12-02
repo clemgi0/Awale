@@ -5,8 +5,8 @@ BIN=bin
 EXECUTABLE=prog
 TEST=test
 
-# Utilisation de la fonction wildcard pour obtenir la liste des fichiers source dans le répertoire Model
-SOURCES=$(wildcard Model/*.c)
+# Utilisation de la fonction wildcard pour obtenir la liste des fichiers source dans les répertoires Model, Client et Server
+SOURCES=$(wildcard Model/*.c Client/*.c Server/*.c)
 
 # Remplacer l'extension .c par .o pour obtenir la liste des fichiers objets
 OBJECTS=$(patsubst %.c,$(BIN)/%.o,$(notdir $(SOURCES)))
@@ -17,11 +17,19 @@ all: main
 # La règle pour construire l'exécutable
 main: $(BIN)/$(EXECUTABLE)
 
-$(BIN)/$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ Main.c $^ $(LDFLAGS)
+$(BIN)/$(EXECUTABLE): $(OBJECTS) $(BIN)/Main.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # La règle générique pour construire chaque fichier objet
 $(BIN)/%.o: Model/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# La règle générique pour construire chaque fichier objet
+$(BIN)/%.o: Client/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# La règle générique pour construire chaque fichier objet
+$(BIN)/%.o: Serveur/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # La règle pour construire l'exécutable
