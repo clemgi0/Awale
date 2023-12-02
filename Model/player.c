@@ -52,5 +52,5 @@ int checkWinner(Player player)
 void setPseudo(Player *player, const char *pseudo)
 {
     strncpy(player->pseudo, pseudo, 10 - 1);
-    player->pseudo[10 - 1] = '\0'; 
+    player->pseudo[MAX_PSEUDO_LENGTH - 1] = '\0'; 
 }
