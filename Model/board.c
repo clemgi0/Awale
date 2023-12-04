@@ -42,7 +42,7 @@ void showBoard(Board board)
 
     printw("-------------------------\n");
 
-    refresh(); // Rafraîchit l'écran
+    refresh();
 }
 
 Case nextCase(Case nextCase)
@@ -106,7 +106,7 @@ Board makeMove(Board board, Case actualCase)
 
 int isLegalMove(Board board, Case actualCase)
 {
-    return (board.board[actualCase.line][actualCase.col] == 0 || actualCase.col < 0 || actualCase.col > 6 || actualCase.line < 0 || actualCase.line > 1) ? 0 : 1;
+    return (board.board[actualCase.line][actualCase.col] == 0 || actualCase.col < 0 || actualCase.col > 5 || actualCase.line < 0 || actualCase.line > 1 || createFamine(board, getArrivalCase(board.board[actualCase.line][actualCase.col], actualCase))) ? 0 : 1;
 }
 
 int areCasesTaken(Board board, int playerNumber, Case arrivalCase)
@@ -125,6 +125,29 @@ int areCasesTaken(Board board, int playerNumber, Case arrivalCase)
     }
 
     return numberOfCasesTaken;
+}
+
+int createFamine(Board board, Case arrivalCase)
+{
+    int i = arrivalCase.line * 5;
+
+    while (i != 7 * arrivalCase.line - 1 && board.board[arrivalCase.line][i] == 0)
+    {
+        i = i - 1 + arrivalCase.line * 2;
+    }
+
+    if (arrivalCase.col != i)
+        return 0;
+
+    while (board.board[arrivalCase.line][i] == 2 || board.board[arrivalCase.line][i] == 3)
+    {
+        if (i == 5 * arrivalCase.line)
+            return 1;
+
+        i = i - 1 + arrivalCase.line * 2;
+    }
+
+    return 0;
 }
 
 Board emptyCasesTaken(Board board, Case arrivalCase, int numberOfCasesTaken)
