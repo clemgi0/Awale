@@ -34,10 +34,29 @@ typedef struct in_addr IN_ADDR;
 
 static void init(void);
 static void end(void);
-static void app(const char *address, const char *name);
 static int init_connection(const char *address);
 static void end_connection(int sock);
 static int read_server(SOCKET sock, char *buffer);
 static void write_server(SOCKET sock, const char *buffer);
 
 #endif /* guard */
+
+
+
+int connect_to_server(const char *address, const char *name);
+void play_game(int server_socket);
+
+
+static void app(const char *address, const char *name)
+{
+    int server_socket = connect_to_server(address, name);
+    if (server_socket == -1) {
+        // Gérer l'échec de la connexion
+        fprintf(stderr, "Failed to connect to the server.\n");
+        return;
+    }
+
+    play_game(server_socket);
+
+    end_connection(server_socket);
+}

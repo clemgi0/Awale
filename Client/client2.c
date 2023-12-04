@@ -173,3 +173,24 @@ int main(int argc, char **argv)
 
    return EXIT_SUCCESS;
 }
+
+int connect_to_server(const char *address, const char *name)
+{
+   SOCKET sock = init_connection(address);
+   if (sock == INVALID_SOCKET)
+   {
+      fprintf(stderr, "Failed to create socket.\n");
+      return -1;
+   }
+
+   // Envoyer le nom du joueur au serveur
+   write_server(sock, name);
+
+   return sock;
+}
+
+void play_game(int server_socket)
+{
+   write_server(server_socket, "addMove"); // Envoyer un mouvement au serveur
+   read_server(server_socket, buffer);     // Lire un message du serveur
+}

@@ -17,31 +17,23 @@ all: main
 # La règle pour construire l'exécutable
 main: $(BIN)/$(EXECUTABLE)
 
-$(BIN)/$(EXECUTABLE): $(OBJECTS) $(BIN)/Main.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+$(BIN)/$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ Main.c $^ $(LDFLAGS)
 
 # La règle générique pour construire chaque fichier objet
 $(BIN)/%.o: Model/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# La règle générique pour construire chaque fichier objet
-$(BIN)/%.o: Client/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# La règle générique pour construire chaque fichier objet
-$(BIN)/%.o: Serveur/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # La règle pour construire l'exécutable
 test: $(BIN)/$(TEST)
 
-$(BIN)/$(TEST): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ TestMain.c $^ $(LDFLAGS)
+$(BIN)/$(TEST): $(OBJECTS) bin/TestMain.o
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-# La règle générique pour construire chaque fichier objet
-$(BIN)/%.o: Model/%.c
+# La cible générique pour construire chaque fichier objet pour les tests
+bin/TestMain.o: TestMain.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # La cible pour nettoyer les fichiers générés
 clean:
-	rm -f $(BIN)/$(EXECUTABLE) $(OBJECTS) bin/Main.o bin/TestMain.o bin/test
+	rm -f $(BIN)/$(EXECUTABLE) $(BIN)/$(TEST) $(OBJECTS) bin/Main.o bin/TestMain.o

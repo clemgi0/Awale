@@ -57,8 +57,5 @@ static void send_message_to_client(int sock, const char *message);
 static void send_message_to_all_clients(Client *clients, Client client, int actual, const char *buffer, char from_server);
 static void remove_client(Client *clients, int to_remove, int *actual);
 static void clear_clients(Client *clients, int actual);
-static int find_player_index_by_socket(Client *clients, int actual, int sock);
-static int find_player_index_by_name(Client *clients, int actual, const char *name);
-static int is_valid_entry(char *entry, int min, int max);
 
 #endif /* guard */

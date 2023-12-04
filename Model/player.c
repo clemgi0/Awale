@@ -12,8 +12,9 @@ Player createPlayer(int playerNb)
     Player player;
 
     player.playerNumber = playerNb;
-
     player.score = 0;
+    // Assurez-vous que la chaîne est null-terminée
+    player.pseudo[0] = '\0';
 
     return player;
 }
@@ -21,7 +22,6 @@ Player createPlayer(int playerNb)
 void showPlayer(Player player)
 {
     printw("\n\nPlayer number: %d | Score: %d\n", player.playerNumber + 1, player.score);
-
     refresh();
 }
 
@@ -41,8 +41,8 @@ int checkWinner(Player player)
 {
     if (player.score >= 25)
     {
-        printf("\n\n----------------------------------------------\nPlayer %d has won the game with %d points!! GGs\n----------------------------------------------", player.playerNumber + 1, player.score);
-
+        printw("\n\n----------------------------------------------\nPlayer %d has won the game with %d points!! GGs\n----------------------------------------------", player.playerNumber + 1, player.score);
+        refresh();
         return 1;
     }
 
@@ -51,6 +51,6 @@ int checkWinner(Player player)
 
 void setPseudo(Player *player, const char *pseudo)
 {
-    strncpy(player->pseudo, pseudo, 10 - 1);
-    player->pseudo[MAX_PSEUDO_LENGTH - 1] = '\0'; 
+    strncpy(player->pseudo, pseudo, MAX_PSEUDO_LENGTH - 1);
+    player->pseudo[MAX_PSEUDO_LENGTH - 1] = '\0';
 }
