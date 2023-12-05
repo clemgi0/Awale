@@ -6,15 +6,27 @@
 
 #include "game.h"
 
-Game createGame(Player first, Player second)
+Game createGame(Player first, Player second, Board board)
 {
     Game newGame;
     newGame.firstPlayer = first;
     newGame.secondPlayer = second;
+    newGame.actualPlayer = first;
+    newGame.board = board;
     newGame.numberOfMoves = 0;
     newGame.lastScoringTour = 0;
+    newGame.winner = 0;
 
     return newGame;
+}
+
+Game setGame(Game game, Player player1, Player player2, Board board)
+{
+    game.firstPlayer = player1;
+    game.secondPlayer = player2;
+    game.board = board;
+
+    return game;
 }
 
 int checkDraw(Game *game, int areCasesTaken)

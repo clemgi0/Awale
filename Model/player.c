@@ -7,20 +7,19 @@
 #include "player.h"
 #include "board.h"
 
-Player createPlayer(int playerNb)
+Player createPlayer(int playerNb, char *name)
 {
     Player player;
-
     player.playerNumber = playerNb;
-
     player.score = 0;
+    player.name = name;
 
     return player;
 }
 
 void showPlayer(Player player)
 {
-    printw("\n\nPlayer number: %d | Score: %d\n", player.playerNumber + 1, player.score);
+    printw("\n\nPlayer : %s | Score: %d\n", player.name, player.score);
 
     refresh();
 }
@@ -41,7 +40,8 @@ int checkWinner(Player player)
 {
     if (player.score >= 25)
     {
-        printf("\n\n----------------------------------------------\nPlayer %d has won the game with %d points!! GGs\n----------------------------------------------", player.playerNumber + 1, player.score);
+        printw("\n\n----------------------------------------------\nPlayer %s has won the game with %d points!! GGs\n----------------------------------------------", player.name, player.score);
+        refresh();
 
         return 1;
     }

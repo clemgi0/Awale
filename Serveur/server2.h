@@ -49,13 +49,12 @@ static int accept_connection(int server_socket, Client *clients, int *actual, fd
 static void end_connection(int sock);
 static int read_client(SOCKET sock, char *buffer);
 static void write_client(SOCKET sock, const char *buffer);
-static void disconnect_client(Client client, Client *clients, int *actual, char *buffer, int index);
-static void close_client(Client *clients, int to_remove, int *actual, char *buffer);
+static void disconnect_client(Client client, Client *clients, int *actual, int index);
+static void close_client(Client *clients, int to_remove, int *actual);
 static void handle_clients(Client *clients, int *actual, fd_set *rdfs, char *buffer);
 static void get_client_list(Client *clients, int index, char message[1024], int *actual);
 static void send_message_to_client(int sock, const char *message);
 static void send_message_to_all_clients(Client *clients, Client client, int actual, const char *buffer, char from_server);
-static void remove_client(Client *clients, int to_remove, int *actual);
 static void clear_clients(Client *clients, int actual);
 static int find_player_index_by_socket(Client *clients, int actual, int sock);
 static int find_player_index_by_name(Client *clients, int actual, const char *name);

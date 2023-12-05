@@ -38,6 +38,7 @@ static void end(void)
 
 static void app(void)
 {
+    int out = 0;
     int server_socket = init_connection();
     char buffer[BUF_SIZE];
     int actual = 0;
@@ -45,7 +46,7 @@ static void app(void)
     Client clients[MAX_CLIENTS];
     fd_set rdfs;
 
-    while (1)
+    while (!out)
     {
         int i = 0;
         FD_ZERO(&rdfs);
@@ -150,7 +151,6 @@ static int accept_connection(int server_socket, Client *clients, int *actual, fd
 static void handle_clients(Client *clients, int *actual, fd_set *rdfs, char *buffer)
 {
     int i = 0;
-    int buf_size = BUF_SIZE;
 
     for (i = 0; i < *actual; i++)
     {
@@ -158,18 +158,37 @@ static void handle_clients(Client *clients, int *actual, fd_set *rdfs, char *buf
         {
             Client client = clients[i];
             int c = read_client(client.sock, buffer);
+            char message[BUF_SIZE];
 
             /* client disconnected */
             if (c == 0)
             {
-                disconnect_client(client, clients, actual, buffer, i);
+                disconnect_client(client, clients, actual, i);
             }
             else
             {
-                if (is_valid_entry(buffer, 1, 5))
+                if (client.in_game)
+                {
+                    // Broadcast the move to the other player
+                    if (strcmp(buffer, "-1") != 0)
+                    {
+                        snprintf(message, BUF_SIZE, "%d", atoi(buffer));
+                        printf("Move from %s : %s\n", client.name, message);
+                        send_message_to_client(client.challenger, message);
+                    }
+                    else
+                    {
+                        send_message_to_client(client.challenger, message);
+                        clients[i].in_game = 0;
+                        clients[i].challenger = 0;
+                        send_message_to_client(clients[i].sock, "\n\n1. Get list of Clients\n2. Defy a Client\n3. Write a bio\n4. Read a bio\n5. Disconnect\n"); // Send menu
+
+                        break;
+                    }
+                }
+                else if (!client.in_game && is_valid_entry(buffer, 1, 5))
                 {
                     int selection = atoi(buffer);
-                    char message[BUF_SIZE];
 
                     switch (selection)
                     {
@@ -179,26 +198,51 @@ static void handle_clients(Client *clients, int *actual, fd_set *rdfs, char *buf
                         break;
 
                     case 2: // Defy a client
-                        // Handle challenge request
-                        sscanf(buffer, "/defy %s", message);
-                        int challenger_index = find_player_index_by_name(clients, *actual, message);
+                        get_client_list(clients, i, message, actual);
 
-                        if (challenger_index != -1 && !clients[challenger_index].in_game && clients[challenger_index].challenger == 0)
+                        send_message_to_client(client.sock, "Please select which client you want to play against.\n");
+                        read_client(client.sock, buffer);
+
+                        while (!is_valid_entry(buffer, 0, *actual) || clients[atoi(buffer) - 1].in_game || atoi(buffer) - 1 == i)
                         {
-                            // Accept the challenge
-                            clients[i].in_game = 1;
-                            clients[i].challenger = clients[challenger_index].sock;
-                            clients[challenger_index].in_game = 1;
-                            clients[challenger_index].challenger = clients[i].sock;
+                            send_message_to_client(client.sock, "Please select which client you want to play against.\n");
+                            read_client(client.sock, buffer);
+                        }
 
-                            // Inform both players about the start of the game
+                        int challenger_index = atoi(buffer) - 1;
+                        int challenger_sock = clients[challenger_index].sock;
+
+                        snprintf(message, BUF_SIZE, "Opponent %.50s selected, please wait until he accepted.\n", clients[challenger_index].name);
+                        send_message_to_client(client.sock, message);
+
+                        snprintf(message, BUF_SIZE, "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nYou've received a challenge from %.50s , type YES to accept or anything else to deny.\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n", client.name);
+                        send_message_to_client(challenger_sock, message);
+
+                        read_client(challenger_sock, buffer);
+
+                        if (strcmp(buffer, "YES") == 0)
+                        {
+
                             send_message_to_client(clients[i].sock, "Challenge accepted! Game starts now.\n");
                             send_message_to_client(clients[challenger_index].sock, "Challenge accepted! Game starts now.\n");
+
+                            clients[i].in_game = 1;
+                            clients[i].challenger = challenger_sock;
+                            clients[challenger_index].in_game = 1;
+                            clients[challenger_index].challenger = client.sock;
+
+                            snprintf(message, BUF_SIZE, "%.50s|%.50s", client.name, clients[challenger_index].name);
+                            send_message_to_client(clients[i].sock, message);
+                            send_message_to_client(challenger_sock, message);
+                            // snprintf(message, BUF_SIZE, "%s", clients[challenger_index].name);
+                            // sleep(1);
+                            // send_message_to_client(clients[i].sock, message);
+                            // send_message_to_client(challenger_sock, message);
                         }
                         else
                         {
-                            // Reject the challenge
-                            send_message_to_client(clients[i].sock, "Challenge rejected. The player may be in a game or has a pending challenge.\n");
+                            snprintf(message, BUF_SIZE, "Your opponent %.50s denied the match.\n", clients[challenger_index].name);
+                            send_message_to_client(client.sock, message);
                         }
 
                         break;
@@ -240,7 +284,7 @@ static void handle_clients(Client *clients, int *actual, fd_set *rdfs, char *buf
                         break;
 
                     case 5: // Disconnect
-                        disconnect_client(client, clients, actual, buffer, i);
+                        disconnect_client(client, clients, actual, i);
 
                         break;
 
@@ -248,7 +292,8 @@ static void handle_clients(Client *clients, int *actual, fd_set *rdfs, char *buf
                         break;
                     }
 
-                    send_message_to_client(clients[i].sock, "\n\n1. Get list of Clients\n2. Defy a Client\n3. Write a bio\n4. Read a bio\n5. Disconnect\n"); // Send menu
+                    if (!client.in_game)
+                        send_message_to_client(clients[i].sock, "\n\n1. Get list of Clients\n2. Defy a Client\n3. Write a bio\n4. Read a bio\n5. Disconnect\n"); // Send menu
                 }
                 else
                 {
@@ -259,7 +304,7 @@ static void handle_clients(Client *clients, int *actual, fd_set *rdfs, char *buf
     }
 }
 
-static void disconnect_client(Client client, Client *clients, int *actual, char *buffer, int index)
+static void disconnect_client(Client client, Client *clients, int *actual, int index)
 {
     printf("%s disconnected!\n", client.name);
     if (client.in_game)
@@ -273,7 +318,8 @@ static void disconnect_client(Client client, Client *clients, int *actual, char 
             clients[other_player_index].challenger = 0;
         }
     }
-    close_client(clients, index, actual, buffer);
+    send_message_to_client(client.sock, "-1");
+    close_client(clients, index, actual);
 }
 
 static void clear_clients(Client *clients, int actual)
@@ -285,7 +331,7 @@ static void clear_clients(Client *clients, int actual)
     }
 }
 
-static void close_client(Client *clients, int to_remove, int *actual, char *buffer)
+static void close_client(Client *clients, int to_remove, int *actual)
 {
     /* remove the client from the array */
     printf("Removing client %s\n", clients[to_remove].name);
@@ -298,7 +344,7 @@ static void get_client_list(Client *clients, int index, char *message, int *actu
 {
     for (int j = 0; j < *actual; j++)
     {
-        snprintf(message, BUF_SIZE, "%d. %s | %sin game\n", j + 1, clients[j].name, clients[j].in_game ? "" : "not ");
+        snprintf(message, BUF_SIZE, "%d. %.50s | %.50sin game\n", j + 1, clients[j].name, clients[j].in_game ? "" : "not ");
         send_message_to_client(clients[index].sock, message);
     }
 }
@@ -402,7 +448,7 @@ static int find_player_index_by_socket(Client *clients, int actual, int sock)
     return -1; // Not found
 }
 
-int main(int argc, char **argv)
+int main()
 {
     init();
     app();

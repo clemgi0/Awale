@@ -1,18 +1,28 @@
 # Awale
 Programmation d’un serveur de Jeu Awalé
 
-# How to run
-1. run sudo apt-get install libncurses5-dev libncursesw5-dev //to install the ncurses library
+# Firstly
 
-2. run make clean //to destroy old bin files
+1. run sudo apt-get install libncurses5-dev libncursesw5-dev //to install the ncurses library if you don't already have it
 
-3. run make //to create the executable
+# How to run in solo mode
+2. run make clean //to clean bin folder
 
-4. run ./bin/prog //to run the executable named prog
-To run client et server
-1. run make clean
-2. run make
-3. run gcc -g Serveur/server2.c -o bin/server
-4. run gcc -g Serveur/server2.c -o bin/server
-5. run ./bin/server
-6. in another terminal, run ./bin/client 127.0.0.1 <pseudo>
+3. run make //to create the server executable
+
+4. run ./bin/jeu //to run the executable named jeu
+
+5. Enjoy :)
+
+# To run in client & server
+1. run make clean //to clean bin folder
+
+2. run make server //to create the server executable
+
+3. run make client //to create the client executable
+
+4. run ./bin/server //in your server's terminal to launch the server
+
+5. In another terminal, run ./bin/client 127.0.0.1 <pseudo> //to connect with your client to the server on local mode
+
+6. In a third terminal, re-run ./bin/client 127.0.0.1 <pseudo> //so that you'll have to clients connected to the server and you'll be able to play
